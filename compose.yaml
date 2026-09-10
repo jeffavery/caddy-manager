@@ -10,7 +10,7 @@ services:
       CADDY_ADMIN_URL: http://127.0.0.1:2019
       ALLOWED_DOMAIN: jeffavery.com
       MANAGER_USER: admin
-      MANAGER_PASSWORD: CHANGE_ME
+      MANAGER_PASSWORD: ${MANAGER_PASSWORD:?Set MANAGER_PASSWORD in Portainer}
     volumes:
       - /opt/docker/caddy/Caddyfile:/config/Caddyfile:rw
       - /opt/docker/caddy/backups:/config/backups:rw
