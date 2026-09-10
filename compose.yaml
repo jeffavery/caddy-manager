@@ -1,0 +1,16 @@
+services:
+  caddy-manager:
+    build: .
+    container_name: caddy-manager
+    restart: unless-stopped
+    network_mode: "container:caddy"
+    environment:
+      CADDYFILE: /config/Caddyfile
+      BACKUP_DIR: /config/backups
+      CADDY_ADMIN_URL: http://127.0.0.1:2019
+      ALLOWED_DOMAIN: jeffavery.com
+      MANAGER_USER: admin
+      MANAGER_PASSWORD: CHANGE_ME
+    volumes:
+      - /opt/docker/caddy/Caddyfile:/config/Caddyfile:rw
+      - /opt/docker/caddy/backups:/config/backups:rw
