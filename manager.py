@@ -1,4 +1,4 @@
-import base64, json, os, re, tempfile, threading, time
+import base64, json, os, re, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -87,12 +87,11 @@ def caddy(path, content):
     except URLError as e: raise ValueError(f"Cannot reach Caddy's validation service: {e.reason}")
 
 def atomic_write(path, content):
-    fd,name=tempfile.mkstemp(prefix=".caddyfile-",dir=path.parent)
-    try:
-        with os.fdopen(fd,"w",encoding="utf-8",newline="") as f: f.write(content); f.flush(); os.fsync(f.fileno())
-        os.chmod(name,0o640); os.replace(name,path)
-    finally:
-        if os.path.exists(name): os.unlink(name)
+    # The live Caddyfile is an individual Docker bind mount, which cannot be
+    # replaced with rename(2). Backups are created before this durable write,
+    # and Caddy's transactional /load keeps the old active config on failure.
+    with path.open("w",encoding="utf-8",newline="") as f:
+        f.write(content); f.flush(); os.fsync(f.fileno())
 
 def activate(original, proposed):
     caddy("/adapt",proposed)
