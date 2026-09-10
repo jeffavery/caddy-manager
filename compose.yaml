@@ -1,6 +1,7 @@
 services:
   caddy-manager:
     build: .
+    pull_policy: build
     container_name: caddy-manager
     restart: unless-stopped
     network_mode: "container:caddy"
